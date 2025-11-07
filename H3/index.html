@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Gift Finder – Homepage</title>
+  <link rel="stylesheet" href="assets/css/styles.css"/>
+</head>
+<body>
+  <main>
+    <section class="hero container">
+      <h1>Find the perfect birthday gift</h1>
+      <p>Choose gifts that match budget and personality.</p>
+      <a class="btn" href="form.html">Start Gift Finder</a>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <h2>Popular Picks</h2>
+        <div id="popular" class="grid cards"></div>
+      </div>
+    </section>
+
+    <section class="section" style="background:#fff">
+      <div class="container">
+        <h2>What users say</h2>
+        <div class="grid cards">
+          <div class="card"><div class="card-body">“So easy to use, saved me hours!” — Mai</div></div>
+          <div class="card"><div class="card-body">“Great ideas within my budget.” — Poom</div></div>
+          <div class="card"><div class="card-body">“Perfect for last-minute gifts.” — Nicha</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="card">
+          <div class="card-body">
+            <strong>Promo</strong>
+            <div>Seasonal discounts on top gifts. Don't miss out!</div>
+            <a class="btn secondary" href="results.html">See Deals</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', ()=>{
+      const container = document.getElementById('popular');
+      const items = CATALOG.slice(0,4);
+      container.innerHTML = items.map(p=>`
+        <div class="card">
+          <img src="${p.image_url}" alt="${p.name}">
+          <div class="card-body">
+            <div class="badge">${p.categories[0]||'Gift'}</div>
+            <strong>${p.name}</strong>
+            <div class="price">${p.price.toLocaleString()} ${p.currency}</div>
+            <div>${p.description}</div>
+            <div class="stack">
+              <a class="btn" href="product.html?id=${p.id}">View</a>
+              <a class="btn secondary" href="${p.external_url}" target="_blank">Buy</a>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    });
+  </script>
+</body>
+<script></script>
+</html>
+
+

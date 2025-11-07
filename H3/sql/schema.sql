@@ -1,0 +1,100 @@
+-- Create database and user (optional). Run these in XAMPP's phpMyAdmin or MySQL CLI.
+-- Adjust password and permissions as needed.
+
+CREATE DATABASE IF NOT EXISTS gift_finder CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE gift_finder;
+
+-- Core tables (English names only)
+
+CREATE TABLE IF NOT EXISTS users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  email VARCHAR(190) UNIQUE,
+  name VARCHAR(190),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS products (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(190) NOT NULL,
+  price DECIMAL(10,2) NOT NULL,
+  currency VARCHAR(10) DEFAULT 'THB',
+  description TEXT,
+  image_url VARCHAR(500),
+  external_url VARCHAR(500),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS categories (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(190) NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS product_categories (
+  product_id INT NOT NULL,
+  category_id INT NOT NULL,
+  PRIMARY KEY (product_id, category_id),
+  FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+  FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS interests (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(190) NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS product_interests (
+  product_id INT NOT NULL,
+  interest_id INT NOT NULL,
+  PRIMARY KEY (product_id, interest_id),
+  FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+  FOREIGN KEY (interest_id) REFERENCES interests(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS reviews (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  product_id INT NOT NULL,
+  rating TINYINT NOT NULL CHECK (rating BETWEEN 1 AND 5),
+  content TEXT,
+  author_name VARCHAR(190),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS orders (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT,
+  full_name VARCHAR(190),
+  address_line1 VARCHAR(190),
+  address_line2 VARCHAR(190),
+  city VARCHAR(120),
+  postal_code VARCHAR(30),
+  phone VARCHAR(60),
+  total_amount DECIMAL(10,2) NOT NULL,
+  status VARCHAR(60) DEFAULT 'pending',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS order_items (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  order_id INT NOT NULL,
+  product_id INT NOT NULL,
+  quantity INT NOT NULL DEFAULT 1,
+  unit_price DECIMAL(10,2) NOT NULL,
+  FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+  FOREIGN KEY (product_id) REFERENCES products(id)
+);
+
+CREATE TABLE IF NOT EXISTS blog_posts (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(190) NOT NULL,
+  slug VARCHAR(190) NOT NULL UNIQUE,
+  content MEDIUMTEXT,
+  published_at TIMESTAMP NULL DEFAULT NULL
+);
+
+-- Seed example lookup data (optional)
+INSERT IGNORE INTO categories (name) VALUES ('Tech'), ('Fitness'), ('Books'), ('Food');
+INSERT IGNORE INTO interests (name) VALUES ('Nature'), ('Music'), ('Minimalist'), ('Pets'), ('Cooking');
+
+
