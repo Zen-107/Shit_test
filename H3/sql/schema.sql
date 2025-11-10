@@ -68,31 +68,6 @@ CREATE TABLE IF NOT EXISTS reviews (
   FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS orders (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  user_id INT,
-  full_name VARCHAR(190),
-  address_line1 VARCHAR(190),
-  address_line2 VARCHAR(190),
-  city VARCHAR(120),
-  postal_code VARCHAR(30),
-  phone VARCHAR(60),
-  total_amount DECIMAL(10,2) NOT NULL,
-  status VARCHAR(60) DEFAULT 'pending',
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(id)
-);
-
-CREATE TABLE IF NOT EXISTS order_items (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  order_id INT NOT NULL,
-  product_id INT NOT NULL,
-  quantity INT NOT NULL DEFAULT 1,
-  unit_price DECIMAL(10,2) NOT NULL,
-  FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
-  FOREIGN KEY (product_id) REFERENCES products(id)
-);
-
 CREATE TABLE IF NOT EXISTS blog_posts (
   id INT AUTO_INCREMENT PRIMARY KEY,
   title VARCHAR(190) NOT NULL,
