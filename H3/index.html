@@ -44,8 +44,40 @@
       </div>
     </section>
   </main>
+  
+  <!--ดึง data xampp-->
+  <script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    const container = document.getElementById('popular');
+    
+    try {
+      const response = await fetch('api/get_all_product.php'); // เปลี่ยนชื่อที่นี่!
+      if (!response.ok) throw new Error('Failed to load products');
+      
+      const allProducts = await response.json();
+      const items = allProducts.slice(0, 4);
 
-  <script src="assets/js/data.js"></script>
+      container.innerHTML = items.map(p => `
+        <div class="card">
+          <img src="${p.image_url}" alt="${p.name}">
+          <div class="card-body">
+            <div class="badge">${p.categories[0] || 'Gift'}</div>
+            <strong>${p.name}</strong>
+            <div class="price">${p.price.toLocaleString()} ${p.currency}</div>
+            <div>${p.description}</div>
+            <div class="stack">
+              <a class="btn" href="product.html?id=${p.id}">View</a>
+              <a class="btn secondary" href="${p.external_url}" target="_blank">Buy</a>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    } catch (error) {
+      console.error('Error loading popular products:', error);
+      container.innerHTML = '<p>Failed to load popular gifts. Please try again later.</p>';
+    }
+  });
+  </script>
   <script src="assets/js/app.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', ()=>{

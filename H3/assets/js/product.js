@@ -31,7 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
           `;
         });
       } else if (p.external_url) {
-        // fallback: ใช้ external_url ในตาราง products
         buyButtons = `
           <a class="btn secondary" href="${p.external_url}" target="_blank" style="text-decoration:none; display:inline-block;">
             ซื้อเลย
@@ -39,15 +38,28 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
       }
 
+      // ✅ สร้างข้อความช่วงราคาจาก price_range
+      let priceText = '—';
+      if (p.price_range && p.price_range.min !== null && p.price_range.max !== null) {
+        const min = parseFloat(p.price_range.min);
+        const max = parseFloat(p.price_range.max);
+        const currency = p.price_range.currency || 'THB';
+        if (min === max) {
+          priceText = `${min.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${currency}`;
+        } else {
+          priceText = `${min.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} – ${max.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${currency}`;
+        }
+      }
+
       root.innerHTML = `
         <div class="grid" style="grid-template-columns: 1fr 1fr; gap:24px">
           <div>
-            <img src="${p.image_url}" alt="${p.name}" style="max-width:100%;">
+            <img src="${p.image_url || ''}" alt="${p.name}" style="max-width:100%; height:auto;">
           </div>
           <div>
-            <div class="badge">${p.categories[0] || 'Gift'}</div>
+            <div class="badge">${p.categories && p.categories[0] ? p.categories[0] : 'Gift'}</div>
             <h1>${p.name}</h1>
-            <div class="price" style="font-size:20px">${p.price.toLocaleString()} ${p.currency}</div>
+            <div class="price" style="font-size:20px">${priceText}</div>
             <p>${p.description || ''}</p>
             <div class="stack">
               ${buyButtons}
