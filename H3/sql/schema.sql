@@ -1,40 +1,27 @@
+-- Create database and user (optional). Run these in XAMPP's phpMyAdmin or MySQL CLI.
+-- Adjust password and permissions as needed.
+
 CREATE DATABASE IF NOT EXISTS gift_finder CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE gift_finder;
 
--- Core tables
+-- Core tables (English names only)
 
 CREATE TABLE IF NOT EXISTS users (
   id INT AUTO_INCREMENT PRIMARY KEY,
   email VARCHAR(190) UNIQUE,
   name VARCHAR(190),
- password_hash VARCHAR(255) NOT NULL DEFAULT '',
-  google_id VARCHAR(255),
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
--- ลบ price และ currency ออกจาก products เพราะราคาขึ้นกับแหล่งขาย
-CREATE TABLE IF NOT EXISTS products (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(190) NOT NULL,
-  description TEXT,
-  image_url VARCHAR(500),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- เพิ่ม min_price, max_price, และ currency ที่นี่แทน
-CREATE TABLE IF NOT EXISTS product_external_urls (
+CREATE TABLE IF NOT EXISTS products (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  product_id INT NOT NULL,
-  url VARCHAR(1000) NOT NULL,
-  source_name VARCHAR(100),
-  min_price DECIMAL(10,2) NOT NULL,
-  max_price DECIMAL(10,2) NOT NULL,
+  name VARCHAR(190) NOT NULL,
+  price DECIMAL(10,2) NOT NULL,
   currency VARCHAR(10) DEFAULT 'THB',
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
-  -- เพิ่ม constraint เพื่อให้ min_price <= max_price
-  CHECK (min_price <= max_price)
+  description TEXT,
+  image_url VARCHAR(500),
+  external_url VARCHAR(500),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS categories (
@@ -73,6 +60,31 @@ CREATE TABLE IF NOT EXISTS reviews (
   FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS orders (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT,
+  full_name VARCHAR(190),
+  address_line1 VARCHAR(190),
+  address_line2 VARCHAR(190),
+  city VARCHAR(120),
+  postal_code VARCHAR(30),
+  phone VARCHAR(60),
+  total_amount DECIMAL(10,2) NOT NULL,
+  status VARCHAR(60) DEFAULT 'pending',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS order_items (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  order_id INT NOT NULL,
+  product_id INT NOT NULL,
+  quantity INT NOT NULL DEFAULT 1,
+  unit_price DECIMAL(10,2) NOT NULL,
+  FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+  FOREIGN KEY (product_id) REFERENCES products(id)
+);
+
 CREATE TABLE IF NOT EXISTS blog_posts (
   id INT AUTO_INCREMENT PRIMARY KEY,
   title VARCHAR(190) NOT NULL,
@@ -81,25 +93,8 @@ CREATE TABLE IF NOT EXISTS blog_posts (
   published_at TIMESTAMP NULL DEFAULT NULL
 );
 
--- โฟลเดอร์สำหรับจัดกลุ่ม bookmark
-CREATE TABLE IF NOT EXISTS bookmark_folders (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  user_id INT NOT NULL,
-  name VARCHAR(190) NOT NULL DEFAULT 'รายการของฉัน', -- ชื่อโฟลเดอร์
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
+-- Seed example lookup data (optional)
+INSERT IGNORE INTO categories (name) VALUES ('Tech'), ('Fitness'), ('Books'), ('Food');
+INSERT IGNORE INTO interests (name) VALUES ('Nature'), ('Music'), ('Minimalist'), ('Pets'), ('Cooking');
 
--- รายการ bookmark แต่ละอัน ผูกกับสินค้า + โฟลเดอร์ + ผู้ใช้
-CREATE TABLE IF NOT EXISTS bookmarks (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  user_id INT NOT NULL,
-  product_id INT NOT NULL,
-  folder_id INT, -- อาจไม่ระบุโฟลเดอร์ก็ได้ (ถ้าอนุญาตให้ใส่ได้ทั้งใน/นอกโฟลเดอร์)
-  custom_name VARCHAR(190), -- เช่น "รองเท้าพ่อ - ไซส์ 42", ถ้าไม่ตั้งก็ใช้ชื่อสินค้าเดิม
-  note TEXT, -- หมายเหตุเพิ่มเติม (optional)
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-  FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
-  FOREIGN KEY (folder_id) REFERENCES bookmark_folders(id) ON DELETE SET NULL
-);
+
