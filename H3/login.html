@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Login – Gift Finder</title>
+
+    <!-- โหลดไฟล์ CSS ที่แยกออกมา -->
+    <link rel="stylesheet" href="assets/css/login.css">
+
+    <!-- Google Sign-In script -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+
+<body>
+
+    <div class="overlay">
+        <div class="login-modal">
+            <h2 class="title">Welcome back</h2>
+            <p class="subtitle">Log in to continue to Gift Finder</p>
+
+            <!-- Google Sign-In -->
+            <div id="g_id_onload"
+                data-client_id="762450496006-qjmhbik4abtmo6d7mh7530ub7fivi776.apps.googleusercontent.com"
+                data-context="signin" data-ux_mode="redirect" data-login_uri="http://localhost/H3/api/googlelogin.php"
+                data-auto_prompt="false">
+            </div>
+
+            <div class="social-login">
+                <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline"
+                    data-text="continue_with" data-logo_alignment="left">
+                </div>
+            </div>
+
+            <div class="divider"><span>or</span></div>
+
+            <!-- แบบฟอร์ม Sign in ปกติ -->
+            <form action="api/authenticate.php" method="POST" class="login-form">
+                <label class="field">
+                    <span class="field-label">Email</span>
+                    <input type="email" name="email" required />
+                </label>
+
+                <label class="field">
+                    <span class="field-label">Password</span>
+                    <input type="password" name="password" required />
+                </label>
+
+                <button type="submit" class="btn primary">Sign in</button>
+            </form>
+            <div style="text-align:center; margin-top:10px; font-size:13px;">
+                ยังไม่มีบัญชีผู้ใช้?
+                <a href="register.html">สร้างบัญชีใหม่</a>
+            </div>
+
+
+            <!-- กล่องแสดง error ด้วย JS -->
+            <div class="error-msg" id="errorBox"></div>
+        </div>
+    </div>
+
+    <!-- JS แสดง error จาก URL -->
+    <script>
+        const params = new URLSearchParams(location.search);
+        if (params.get("error")) {
+            document.getElementById("errorBox").textContent =
+                "Login failed. Please try again.";
+        }
+    </script>
+
+</body>
+
+</html>

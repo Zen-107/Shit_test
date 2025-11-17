@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Register – Gift Finder</title>
+
+    <!-- ใช้ CSS เดียวกับหน้า login -->
+    <link rel="stylesheet" href="assets/css/login.css">
+</head>
+
+<body>
+    <div class="overlay">
+        <div class="login-modal">
+            <h2 class="title">Create account</h2>
+            <p class="subtitle">Sign up to start using Gift Finder</p>
+
+            <form action="api/register.php" method="POST" class="login-form">
+                <label class="field">
+                    <span class="field-label">Name</span>
+                    <input type="text" name="name" required />
+                </label>
+
+                <label class="field">
+                    <span class="field-label">Email</span>
+                    <input type="email" name="email" required />
+                </label>
+
+                <label class="field">
+                    <span class="field-label">Password</span>
+                    <input type="password" name="password" required minlength="6" />
+                </label>
+
+                <label class="field">
+                    <span class="field-label">Confirm password</span>
+                    <input type="password" name="password_confirm" required minlength="6" />
+                </label>
+
+                <button type="submit" class="btn primary">Sign up</button>
+            </form>
+
+            <div class="error-msg" id="errorBox">
+                <!-- ข้อความ error / success จะถูกเติมด้วย PHP ผ่าน ?error= / ?success= -->
+            </div>
+
+            <div style="text-align:center; margin-top:10px; font-size:13px;">
+                มีบัญชีอยู่แล้ว?
+                <a href="login.html">กลับไปหน้า login</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS แสดง error/success จาก URL -->
+    <script>
+        const params = new URLSearchParams(location.search);
+        const error = params.get("error");
+        const success = params.get("success");
+        const box = document.getElementById("errorBox");
+
+        if (error && box) {
+            if (error === "password_mismatch") {
+                box.textContent = "รหัสผ่านทั้งสองช่องไม่ตรงกัน";
+            } else if (error === "email_exists") {
+                box.textContent = "อีเมลนี้มีบัญชีอยู่แล้ว ลองเข้าสู่ระบบแทน";
+            } else {
+                box.textContent = "ไม่สามารถสมัครสมาชิกได้ กรุณาลองใหม่อีกครั้ง";
+            }
+        } else if (success && box) {
+            if (success === "1") {
+                box.style.color = "#16a34a"; // เขียว
+                box.textContent = "สมัครสมาชิกสำเร็จแล้ว! กรุณาเข้าสู่ระบบ";
+            }
+        }
+    </script>
+</body>
+
+</html>
