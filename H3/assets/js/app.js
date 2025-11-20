@@ -30,26 +30,6 @@ function updateQty(productId, quantity){
   if(it){ it.quantity = Math.max(1, quantity|0); writeCart(cart); }
 }
 
-// Common header/footer
-function renderLayout(){
-  const header = document.createElement('header');
-  header.innerHTML = `
-    <div class="container">
-      <div class="nav">
-        <a class="brand" href="index.html">Gift Finder</a>
-        <nav>
-          <a href="form.html">Find Gift</a>
-          <a href="results.html">Results</a>
-          <a href="blog.html">Blog</a>
-          <a href="about.html">About</a>
-          <a href="contact.html">Contact</a>
-          <a href="cart.html">Cart</a>
-        </nav>
-      </div>
-    </div>`;
-  document.body.prepend(header);
-}
-
 document.addEventListener('DOMContentLoaded', renderLayout);
 
 // Slideshow Functionality
