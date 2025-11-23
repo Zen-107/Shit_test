@@ -10,7 +10,11 @@ CREATE TABLE IF NOT EXISTS users (
   id INT AUTO_INCREMENT PRIMARY KEY,
   email VARCHAR(190) UNIQUE,
   name VARCHAR(190),
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+   password_hash VARCHAR(255) NOT NULL DEFAULT '',
+  google_id VARCHAR(255),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  
 );
 
 CREATE TABLE IF NOT EXISTS products (
@@ -96,5 +100,24 @@ CREATE TABLE IF NOT EXISTS blog_posts (
 -- Seed example lookup data (optional)
 INSERT IGNORE INTO categories (name) VALUES ('Tech'), ('Fitness'), ('Books'), ('Food');
 INSERT IGNORE INTO interests (name) VALUES ('Nature'), ('Music'), ('Minimalist'), ('Pets'), ('Cooking');
+
+CREATE TABLE IF NOT EXISTS gift_recipients (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(190),
+  relationship VARCHAR(190),
+  gender VARCHAR(50),
+  age_range VARCHAR(50),
+  budget VARCHAR(50),
+  category VARCHAR(100),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+ALTER TABLE gift_recipients
+  ADD COLUMN user_id INT NOT NULL,
+  ADD CONSTRAINT fk_recipient_user
+    FOREIGN KEY (user_id) REFERENCES users(id)
+    ON DELETE CASCADE;
+
+
 
 

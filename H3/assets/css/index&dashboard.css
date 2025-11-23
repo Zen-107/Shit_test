@@ -62,64 +62,18 @@ main {
   font-size: 1.4rem;
 }
 
-/* ========== FRIEND DROPDOWN TAB BAR ========== */
-.nav-dropdown {
-  position: relative;
-  display: inline-block;
-}
 
-.nav-link-btn {
-  background: none;
-  border: none;
-  color: white;
-  font-weight: 500;
-  font-family: "Poppins", sans-serif;
-  font-size: 1rem;
-  padding: 0 1rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
 
-.nav-link-btn:hover,
-.nav-link-btn:focus {
-  color: var(--accent);
-}
-
-.dropdown-menu {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  background: white;
-  border-radius: var(--radius);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-  width: 280px;
-  z-index: 1001;
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(-8px);
-  transition: 0.2s cubic-bezier(0.2, 0, 0.1, 1);
-  border: 1px solid #eee;
-  /* ✅ เพิ่ม max-height + overflow-y */
-  max-height: 320px; /* ~5 รายการ + ปุ่ม */
-  overflow: hidden;
-}
-
-.nav-dropdown:hover .dropdown-menu,
-.nav-dropdown:focus-within .dropdown-menu {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
-}
 
 .dropdown-content {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 0.75rem 0.75rem 0.5rem; /* ปรับ padding ล่างให้น้อยลง */
+  padding: 0.75rem 0.75rem 0.5rem;
+  /* ปรับ padding ล่างให้น้อยลง */
   /* ✅ ทำให้รายการ scroll ได้ */
-  max-height: 260px; /* ปรับตามความเหมาะสม */
+  max-height: 260px;
+  /* ปรับตามความเหมาะสม */
   overflow-y: auto;
 }
 
@@ -166,7 +120,8 @@ main {
 .dropdown-footer {
   padding: 0 0.75rem 0.75rem;
   border-top: 1px solid #f0f0f0;
-  margin-top: auto; /* ดันให้ล่างสุดเสมอ */
+  margin-top: auto;
+  /* ดันให้ล่างสุดเสมอ */
 }
 
 .add-friend-btn {
@@ -459,4 +414,70 @@ main {
   border-top: 1px solid #333;
   color: #ccc;
   font-size: 0.95rem;
+}
+
+/* ===== PROFILE DROPDOWN ===== */
+
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  position: relative;
+}
+
+
+.profile-menu {
+  position: relative;
+}
+
+.profile-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  color: #fff;
+  /* ปรับให้เข้ากับสี navbar */
+}
+
+/* กล่อง dropdown */
+.profile-dropdown {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background: #ffffff;
+  border-radius: 10px;
+  min-width: 180px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+  padding: 8px 0;
+
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transform-origin: top;
+  transition: max-height 0.2s ease, opacity 0.2s ease;
+  z-index: 100;
+}
+
+/* ตอนเปิด */
+.profile-dropdown.open {
+  max-height: 300px;
+  opacity: 1;
+}
+
+.profile-dropdown a,
+.profile-dropdown button {
+  width: 100%;
+  padding: 8px 16px;
+  text-align: left;
+  border: none;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  color: #333;
+}
+
+.profile-dropdown a:hover,
+.profile-dropdown button:hover {
+  background: #f3f4f6;
 }

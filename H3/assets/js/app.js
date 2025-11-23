@@ -1,36 +1,36 @@
-function qs(selector, scope=document){return scope.querySelector(selector)}
-function qsa(selector, scope=document){return Array.from(scope.querySelectorAll(selector))}
+function qs(selector, scope = document) { return scope.querySelector(selector) }
+function qsa(selector, scope = document) { return Array.from(scope.querySelectorAll(selector)) }
 
 // Simple router helpers
-function getQueryParam(name){
+function getQueryParam(name) {
   const params = new URLSearchParams(window.location.search);
   return params.get(name);
 }
 
 // Cart in localStorage
 const CART_KEY = "gf_cart";
-function readCart(){
-  try{ return JSON.parse(localStorage.getItem(CART_KEY)||"[]"); }catch{ return [] }
+function readCart() {
+  try { return JSON.parse(localStorage.getItem(CART_KEY) || "[]"); } catch { return [] }
 }
-function writeCart(items){ localStorage.setItem(CART_KEY, JSON.stringify(items)); }
-function addToCart(productId, quantity=1){
+function writeCart(items) { localStorage.setItem(CART_KEY, JSON.stringify(items)); }
+function addToCart(productId, quantity = 1) {
   const cart = readCart();
-  const existing = cart.find(i=>i.productId===productId);
-  if(existing){ existing.quantity += quantity; }
+  const existing = cart.find(i => i.productId === productId);
+  if (existing) { existing.quantity += quantity; }
   else { cart.push({ productId, quantity }); }
   writeCart(cart);
 }
-function removeFromCart(productId){
-  const cart = readCart().filter(i=>i.productId!==productId);
+function removeFromCart(productId) {
+  const cart = readCart().filter(i => i.productId !== productId);
   writeCart(cart);
 }
-function updateQty(productId, quantity){
+function updateQty(productId, quantity) {
   const cart = readCart();
-  const it = cart.find(i=>i.productId===productId);
-  if(it){ it.quantity = Math.max(1, quantity|0); writeCart(cart); }
+  const it = cart.find(i => i.productId === productId);
+  if (it) { it.quantity = Math.max(1, quantity | 0); writeCart(cart); }
 }
 
-document.addEventListener('DOMContentLoaded', renderLayout);
+//document.addEventListener('DOMContentLoaded', renderLayout);
 
 // Slideshow Functionality
 document.addEventListener('DOMContentLoaded', () => {
@@ -62,10 +62,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ปุ่ม Next
-if (nextBtn) {
-  nextBtn.addEventListener('click', () => {
-    showSlide(currentIndex + 1);
-  });}else {console.warn("No next button found");} 
+  if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
+      showSlide(currentIndex + 1);
+    });
+  } else { console.warn("No next button found"); }
 
 
   // ปุ่ม Prev

@@ -3,7 +3,7 @@ require_once "config.php";
 
 // ถ้ายังไม่ล็อกอิน → ส่งกลับไปหน้า login
 if (!isset($_SESSION["user_id"])) {
-    header("Location: login.php");
+    header("Location: authenticate.php");
     exit;
 }
 
@@ -17,7 +17,7 @@ $name = $_SESSION["user_name"] ?? $_SESSION["user_email"];
 </head>
 <body>
     <h1>ยินดีต้อนรับ, <?= htmlspecialchars($name) ?></h1>
-    <p>นี่คือหน้า Home (เอาไปแทนด้วยหน้าเว็บของขวัญที่ ph ออกแบบไว้ได้เลย)</p>
+    <p>นี่คือหน้า Home </p>
 
     <p><a href="logout.php">Logout</a></p>
 </body>
