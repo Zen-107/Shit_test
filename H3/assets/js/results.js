@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
               <div class="price">${priceText}</div>
               <div>${p.description ? p.description.substring(0, 100) + '...' : ''}</div>
               <div class="stack">
-                <a class="btn" href="product.html?id=${p.id}">View details</a>
+                <a class="btn" href="product.php?id=${p.id}">View details</a>
               </div>
             </div>
           </div>

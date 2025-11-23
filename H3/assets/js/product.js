@@ -28,27 +28,113 @@ async function loadBookmarkStatus(productId) {
   }
 }
 
-async function toggleBookmark(productId, buttonElement) {
-  const isCurrentlyBookmarked = buttonElement.classList.contains('bookmarked');
-  const url = isCurrentlyBookmarked ? '/H3/api/remove_bookmark.php' : '/H3/api/add_bookmark.php';
-  const res = await fetch(url, {
+async function getOrCreateFavoriteFolder(userId){
+  try {
+    const res = await fetch('/H3/api/get_folder_by_name.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ product_id: productId })
-  });
-  const data = await res.json();
-  if (data.success) {
-    if (isCurrentlyBookmarked) {
+    body: JSON.stringify({ user_id: userId, name: 'Favorites' })
+    });
+    const data = await res.json();
+    if(data.success && data.folder){
+      return data.folder.id;
+    }else{
+      const createRes = await fetch('/H3/api/create_folder.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId, name: 'Favorites' })
+      });
+      const createData = await createRes.json();
+      if(createData.success){
+        return createData.folder_id;
+      }else{
+        throw new Error(createData.message || 'ไม่สามารถสร้างโฟลเดอร์ Favorites ได้');
+      }
+    }
+  }catch(e){
+    console.error('Error in getOrCreateFavoriteFolder:', e);
+    throw e;
+  }
+}
+
+
+
+async function toggleBookmark(productId, buttonElement) {
+  const isCurrentlyBookmarked = buttonElement.classList.contains('bookmarked');
+
+  if (isCurrentlyBookmarked) {
+    // ถ้าบุ๊กมาร์กอยู่แล้ว ให้ลบออก (ใช้ remove_bookmark.php เหมือนเดิม)
+    const url = '/H3/api/remove_bookmark.php';
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ product_id: productId })
+    });
+    const data = await res.json();
+    if (data.success) {
       buttonElement.classList.remove('bookmarked');
       buttonElement.innerHTML = '<i class="far fa-bookmark"></i> บุ๊กมาร์ก';
     } else {
-      buttonElement.classList.add('bookmarked');
-      buttonElement.innerHTML = '<i class="fas fa-bookmark"></i> ลบบุ๊กมาร์ก';
+      alert('⚠️ ' + data.message);
     }
+    return; // จบการทำงานที่นี่ถ้าเป็นการลบ
+  }
+
+  // ถ้ายังไม่ได้บุ๊กมาร์ก ให้เพิ่มใหม่
+  // ตรวจสอบว่า USER_ID ถูกตั้งค่าหรือไม่
+  if (!USER_ID) {
+    alert('⚠️ กรุณาล็อกอินก่อน');
+    return;
+  }
+
+  let folderId = null;
+  let folderNameInput = prompt("บันทึกไว้ในโฟลเดอร์ใด? (เว้นว่างเพื่อใช้ 'favorite')", "favorite");
+
+  if (folderNameInput === null) {
+    // ผู้ใช้กด Cancel
+    return;
+  }
+
+  if (folderNameInput.trim() === "" || folderNameInput.trim().toLowerCase() === "favorite") {
+    // ถ้าเว้นว่าง หรือพิมพ์ 'favorite' (ไม่สนใจตัวพิมพ์) ใช้โฟลเดอร์ favorite
+    try {
+      folderId = await getOrCreateFavoriteFolder(USER_ID);
+    } catch (e) {
+      alert('⚠️ เกิดข้อผิดพลาดในการจัดการโฟลเดอร์ favorite: ' + e.message);
+      return;
+    }
+  } else {
+    // สร้างโฟลเดอร์ใหม่ตามชื่อที่ผู้ใช้ป้อน
+    const createRes = await fetch('/H3/api/create_folder.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user_id: USER_ID, name: folderNameInput.trim() })
+    });
+    const createData = await createRes.json();
+    if (createData.success) {
+      folderId = createData.folder_id;
+    } else {
+      alert('⚠️ ' + createData.message);
+      return;
+    }
+  }
+
+  // ส่ง folder_id ไปยัง add_bookmark.php
+  const url = '/H3/api/add_bookmark.php';
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ product_id: productId, folder_id: folderId })
+  });
+  const data = await res.json();
+  if (data.success) {
+    buttonElement.classList.add('bookmarked');
+    buttonElement.innerHTML = '<i class="fas fa-bookmark"></i> ลบบุ๊กมาร์ก';
   } else {
     alert('⚠️ ' + data.message);
   }
 }
+
 
 
 document.addEventListener('DOMContentLoaded', async () => { // ✅ เพิ่ม async ที่นี่
@@ -123,12 +209,15 @@ document.addEventListener('DOMContentLoaded', async () => { // ✅ เพิ่�
         </div>
       </div>
 
+
+      
       <div class="section">
         <h2>รีวิว</h2>
         <div class="card">
           <div class="card-body">“คุณภาพดี คุ้มค่ากับราคา” — ผู้ใช้งาน</div>
         </div>
       </div>
+      
     `;
 
     // ✅ เพิ่ม event listener

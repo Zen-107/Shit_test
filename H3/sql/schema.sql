@@ -98,8 +98,6 @@ CREATE TABLE IF NOT EXISTS blog_posts (
 );
 
 -- Seed example lookup data (optional)
-INSERT IGNORE INTO categories (name) VALUES ('Tech'), ('Fitness'), ('Books'), ('Food');
-INSERT IGNORE INTO interests (name) VALUES ('Nature'), ('Music'), ('Minimalist'), ('Pets'), ('Cooking');
 
 CREATE TABLE IF NOT EXISTS gift_recipients (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -119,5 +117,20 @@ ALTER TABLE gift_recipients
     ON DELETE CASCADE;
 
 
+-- bookmarks table to link users and their bookmarked products
+CREATE TABLE `bookmarks` (
+  id int(11) NOT NULL,
+  user_id int(11) NOT NULL,
+  product_id int(11) NOT NULL,
+  folder_id int(11) DEFAULT NULL,
+  custom_name varchar(190) DEFAULT NULL,
+  note text DEFAULT NULL,
+  created_at timestamp NOT NULL DEFAULT current_timestamp()
+)
 
-
+CREATE TABLE `bookmark_folders` (
+  id int(11) NOT NULL,
+  user_id int(11) NOT NULL,
+  name varchar(190) NOT NULL DEFAULT 'รายการของฉัน',
+  created_at timestamp NOT NULL DEFAULT current_timestamp()
+)

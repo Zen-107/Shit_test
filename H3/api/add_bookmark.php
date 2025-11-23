@@ -31,6 +31,16 @@ if (!$stmt->fetch()) {
     exit; // ต้องมี exit หลังจาก echo json และก่อนส่วนอื่น
 }
 
+if($folder_id > 0){
+    // ตรวจสอบว่าโฟลเดอร์นี้เป็นของผู้ใช้จริงไหม
+    $stmt = $pdo->prepare("SELECT id FROM bookmarks_folders WHERE id = ? AND user_id = ?");
+    $stmt->execute([$folder_id, $user_id]);
+    if (!$stmt->fetch()) {
+        echo json_encode(['success' => false, 'message' => 'โฟลเดอร์ไม่ถูกต้อง']);
+        exit; // ต้องมี exit หลังจาก echo json และก่อนส่วนอื่น
+    }
+}
+
 // ป้องกัน bookmark ซ้ำ
 $stmt = $pdo->prepare("SELECT id FROM bookmarks WHERE user_id = ? AND product_id = ?");
 $stmt->execute([$user_id, $product_id]);
