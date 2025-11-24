@@ -185,3 +185,12 @@ CREATE TABLE gift_recipients (
   FOREIGN KEY (age_range_id) REFERENCES age_ranges(id) ON DELETE SET NULL,
   FOREIGN KEY (budget_id) REFERENCES budget_options(id) ON DELETE SET NULL
 );
+
+
+CREATE TABLE IF NOT EXISTS product_budgets (
+    product_id INT NOT NULL,
+    budget_id INT NOT NULL,
+    PRIMARY KEY (product_id, budget_id),
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+    FOREIGN KEY (budget_id) REFERENCES budget_options(id) ON DELETE CASCADE
+);
