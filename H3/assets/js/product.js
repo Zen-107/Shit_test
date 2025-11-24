@@ -57,82 +57,215 @@ async function getOrCreateFavoriteFolder(userId){
   }
 }
 
+/////////////////////////////////////////////////////////////// for folder selection ///////////////////////////////////////////////////////
+// ✅ ฟังก์ชันดึงโฟลเดอร์ของผู้ใช้
+async function getUserFolders() {
+  try {
+    const res = await fetch('/H3/api/get_user_folders.php');
+    const data = await res.json();
+    if (data.success) {
+      return data.folders;
+    } else {
+      throw new Error(data.message || 'ไม่สามารถดึงข้อมูลโฟลเดอร์ได้');
+    }
+  } catch (e) {
+    console.error('Error fetching folders:', e);
+    alert('⚠️ เกิดข้อผิดพลาดในการดึงข้อมูลโฟลเดอร์');
+    return [];
+  }
+}
+
+// ✅ ฟังก์ชันสร้าง modal สำหรับเลือกโฟลเดอร์
+function showFolderSelectionModal(folders, onConfirm) {
+  // ลบ modal เก่า (ถ้ามี)
+  const existingModal = document.getElementById('folder-modal');
+  if (existingModal) existingModal.remove();
+
+  // สร้าง modal
+  const modal = document.createElement('div');
+  modal.id = 'folder-modal';
+  modal.style.cssText = `
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000;
+  `;
+  modal.innerHTML = `
+    <div style="background: white; padding: 20px; border-radius: 8px; width: 400px; max-width: 90%;">
+      <h3>เลือกโฟลเดอร์</h3>
+      <div style="max-height: 300px; overflow-y: auto;">
+        ${folders.map(f => `<label style="display: block; margin: 8px 0;"><input type="radio" name="folder" value="${f.id}"> ${f.name}</label>`).join('')}
+        <label style="display: block; margin: 8px 0;"><input type="radio" name="folder" value="new"> สร้างโฟลเดอร์ใหม่</label>
+      </div>
+      <div style="margin-top: 16px;">
+        <input type="text" id="new-folder-name" placeholder="ชื่อโฟลเดอร์ใหม่ (ถ้าเลือก 'สร้างโฟลเดอร์ใหม่')" style="width: 100%; padding: 8px; margin-bottom: 8px; display: none;" />
+        <button onclick="confirmFolderSelection()" style="margin-right: 8px;">ยืนยัน</button>
+        <button onclick="closeFolderModal()">ยกเลิก</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  // ซ่อน/แสดงช่องพิมพ์ชื่อโฟลเดอร์ใหม่
+  document.querySelectorAll('input[name="folder"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      const newFolderInput = document.getElementById('new-folder-name');
+      if (radio.value === 'new') {
+        newFolderInput.style.display = 'block';
+      } else {
+        newFolderInput.style.display = 'none';
+      }
+    });
+  });
+
+  window.confirmFolderSelection = () => {
+    const selectedRadio = document.querySelector('input[name="folder"]:checked');
+    if (!selectedRadio) {
+      alert('กรุณาเลือกโฟลเดอร์');
+      return;
+    }
+
+    if (selectedRadio.value === 'new') {
+      const newFolderName = document.getElementById('new-folder-name').value.trim();
+      if (!newFolderName) {
+        alert('กรุณากรอกชื่อโฟลเดอร์ใหม่');
+        return;
+      }
+      onConfirm(null, newFolderName);
+    } else {
+      onConfirm(parseInt(selectedRadio.value), null);
+    }
+    closeFolderModal();
+  };
+
+  window.closeFolderModal = () => {
+    document.body.removeChild(modal);
+  };
+}
+
+
+
+//////////////////////////////////////////////////////////////////////// end for folder selection ///////////////////////////////////////////////////////
+
+
 
 
 async function toggleBookmark(productId, buttonElement) {
   const isCurrentlyBookmarked = buttonElement.classList.contains('bookmarked');
 
   if (isCurrentlyBookmarked) {
-    // ถ้าบุ๊กมาร์กอยู่แล้ว ให้ลบออก (ใช้ remove_bookmark.php เหมือนเดิม)
-    const url = '/H3/api/remove_bookmark.php';
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ product_id: productId })
-    });
-    const data = await res.json();
-    if (data.success) {
-      buttonElement.classList.remove('bookmarked');
-      buttonElement.innerHTML = '<i class="far fa-bookmark"></i> บุ๊กมาร์ก';
-    } else {
-      alert('⚠️ ' + data.message);
+    // ✅ ลบบุ๊กมาร์ก — ให้ผู้ใช้เลือก folder ที่จะลบ
+    if (!USER_ID) {
+      alert('⚠️ กรุณาล็อกอินก่อน');
+      return;
+    }
+
+    const folders = await getUserFolders();
+    if (folders.length === 0) {
+      alert('⚠️ ไม่มีโฟลเดอร์ที่บุ๊กมาร์กสินค้านี้ไว้');
+      return;
+    }
+
+    // ✅ ดึงข้อมูลว่าสินค้านี้อยู่ใน folder ไหนบ้าง
+    try {
+      const res = await fetch(`/H3/api/get_bookmarks_by_product.php?product_id=${productId}`);
+      const data = await res.json();
+      if (!data.success) {
+        alert('⚠️ ' + data.message);
+        return;
+      }
+
+      const bookmarkedFolders = data.bookmarks; // เช่น [{id: 1, folder_id: 1, folder_name: 'Favorite'}, ...]
+      if (bookmarkedFolders.length === 0) {
+        alert('⚠️ ไม่พบบุ๊กมาร์กในโฟลเดอร์ใดเลย');
+        return;
+      }
+
+      // ✅ แสดง modal ให้เลือก folder ที่จะลบ
+      showFolderSelectionModal(bookmarkedFolders.map(b => ({ id: b.folder_id, name: b.folder_name })), async (selectedFolderId) => {
+        if (!selectedFolderId) {
+          alert('กรุณาเลือกโฟลเดอร์ที่จะลบ');
+          return;
+        }
+
+        // ✅ ส่ง folder_id ไปยัง remove_bookmark.php
+        const url = '/H3/api/remove_bookmark.php';
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ product_id: productId, folder_id: selectedFolderId })
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert('ลบบุ๊กมาร์กสำเร็จ');
+          // ✅ ตรวจสอบว่าสินค้ายังมีบุ๊กมาร์กใน folder อื่นอีกไหม
+          const stillBookmarked = await loadBookmarkStatus(productId);
+          if (!stillBookmarked) {
+            buttonElement.classList.remove('bookmarked');
+            buttonElement.innerHTML = '<i class="far fa-bookmark"></i> บุ๊กมาร์ก';
+          } else {
+            // ยังมีอยู่ใน folder อื่น → ไม่เปลี่ยนสถานะปุ่ม
+            alert('สินค้ายังอยู่ในโฟลเดอร์อื่นอยู่');
+          }
+        } else {
+          alert('⚠️ ' + data.message);
+        }
+      });
+    } catch (e) {
+      console.error('Error fetching bookmarks:', e);
+      alert('⚠️ เกิดข้อผิดพลาดในการดึงข้อมูลบุ๊กมาร์ก');
     }
     return; // จบการทำงานที่นี่ถ้าเป็นการลบ
   }
 
-  // ถ้ายังไม่ได้บุ๊กมาร์ก ให้เพิ่มใหม่
-  // ตรวจสอบว่า USER_ID ถูกตั้งค่าหรือไม่
+  // ✅ ถ้ายังไม่ได้บุ๊กมาร์ก ให้เพิ่มใหม่ (เหมือนเดิม)
   if (!USER_ID) {
     alert('⚠️ กรุณาล็อกอินก่อน');
     return;
   }
 
   let folderId = null;
-  let folderNameInput = prompt("บันทึกไว้ในโฟลเดอร์ใด? (เว้นว่างเพื่อใช้ 'favorite')", "favorite");
+  let newFolderName = null;
 
-  if (folderNameInput === null) {
-    // ผู้ใช้กด Cancel
-    return;
-  }
-
-  if (folderNameInput.trim() === "" || folderNameInput.trim().toLowerCase() === "favorite") {
-    // ถ้าเว้นว่าง หรือพิมพ์ 'favorite' (ไม่สนใจตัวพิมพ์) ใช้โฟลเดอร์ favorite
-    try {
-      folderId = await getOrCreateFavoriteFolder(USER_ID);
-    } catch (e) {
-      alert('⚠️ เกิดข้อผิดพลาดในการจัดการโฟลเดอร์ favorite: ' + e.message);
+  const folders = await getUserFolders();
+  showFolderSelectionModal(folders, async (selectedFolderId, newFolderNameInput) => {
+    if (selectedFolderId) {
+      folderId = selectedFolderId;
+    } else if (newFolderNameInput) {
+      try {
+        const createRes = await fetch('/H3/api/create_folder.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: USER_ID, name: newFolderNameInput.trim() })
+        });
+        const createData = await createRes.json();
+        if (createData.success) {
+          folderId = createData.folder_id;
+        } else {
+          alert('⚠️ ' + createData.message);
+          return;
+        }
+      } catch (e) {
+        console.error('Error creating folder:', e);
+        alert('⚠️ เกิดข้อผิดพลาดในการสร้างโฟลเดอร์');
+        return;
+      }
+    } else {
       return;
     }
-  } else {
-    // สร้างโฟลเดอร์ใหม่ตามชื่อที่ผู้ใช้ป้อน
-    const createRes = await fetch('/H3/api/create_folder.php', {
+
+    const url = '/H3/api/add_bookmark.php';
+    const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user_id: USER_ID, name: folderNameInput.trim() })
+      body: JSON.stringify({ product_id: productId, folder_id: folderId })
     });
-    const createData = await createRes.json();
-    if (createData.success) {
-      folderId = createData.folder_id;
+    const data = await res.json();
+    if (data.success) {
+      buttonElement.classList.add('bookmarked');
+      buttonElement.innerHTML = '<i class="fas fa-bookmark"></i> ลบบุ๊กมาร์ก';
     } else {
-      alert('⚠️ ' + createData.message);
-      return;
+      alert('⚠️ ' + data.message);
     }
-  }
-
-  // ส่ง folder_id ไปยัง add_bookmark.php
-  const url = '/H3/api/add_bookmark.php';
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ product_id: productId, folder_id: folderId })
   });
-  const data = await res.json();
-  if (data.success) {
-    buttonElement.classList.add('bookmarked');
-    buttonElement.innerHTML = '<i class="fas fa-bookmark"></i> ลบบุ๊กมาร์ก';
-  } else {
-    alert('⚠️ ' + data.message);
-  }
 }
 
 

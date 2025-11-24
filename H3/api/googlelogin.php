@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once "config.php";
 
 // token ที่ Google ส่งมาในฟอร์มชื่อ credential
@@ -67,9 +68,19 @@ $_SESSION["user_id"]    = $userId;
 $_SESSION["user_email"] = $email;
 $_SESSION["user_name"]  = $name;
 
-// ไปหน้า home
-// ❗ เดิม: home.php อยู่ใน /H3/api/home.php (ไม่มีไฟล์)
-// header("Location: home.php");
+
+/////////////////////////////////////////////////// just checking ///////////////////////////////////////////////////
+/*
+echo "<pre>";
+print_r($_SESSION);
+echo "</pre>";
+exit;
+*/
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
 
 header("Location: /H3/index.html");
 exit;

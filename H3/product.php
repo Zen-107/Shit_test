@@ -1,3 +1,8 @@
+<?php
+session_start();
+$user_id = $_SESSION["user_id"] ?? null;
+$user_name = $_SESSION["user_name"] ?? null;
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,7 +18,8 @@
 
   <script src="assets/js/app.js"></script>
   <script>
-      var USER_ID = <?php echo json_encode($_SESSION['user_id'] ?? null); ?>;
+      const USER_ID = <?php echo $user_id ? json_encode($user_id) : 'null'; ?>;
+      const USER_NAME = <?php echo $user_name ? json_encode($user_name) : 'null' ?>;
   </script>
   <script src="assets/js/product.js"></script>
 </body>
