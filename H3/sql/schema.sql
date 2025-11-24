@@ -64,31 +64,6 @@ CREATE TABLE IF NOT EXISTS reviews (
   FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS orders (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  user_id INT,
-  full_name VARCHAR(190),
-  address_line1 VARCHAR(190),
-  address_line2 VARCHAR(190),
-  city VARCHAR(120),
-  postal_code VARCHAR(30),
-  phone VARCHAR(60),
-  total_amount DECIMAL(10,2) NOT NULL,
-  status VARCHAR(60) DEFAULT 'pending',
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(id)
-);
-
-CREATE TABLE IF NOT EXISTS order_items (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  order_id INT NOT NULL,
-  product_id INT NOT NULL,
-  quantity INT NOT NULL DEFAULT 1,
-  unit_price DECIMAL(10,2) NOT NULL,
-  FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
-  FOREIGN KEY (product_id) REFERENCES products(id)
-);
-
 CREATE TABLE IF NOT EXISTS blog_posts (
   id INT AUTO_INCREMENT PRIMARY KEY,
   title VARCHAR(190) NOT NULL,
@@ -98,7 +73,7 @@ CREATE TABLE IF NOT EXISTS blog_posts (
 );
 
 -- Seed example lookup data (optional)
-
+/*
 CREATE TABLE IF NOT EXISTS gift_recipients (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(190),
@@ -107,18 +82,15 @@ CREATE TABLE IF NOT EXISTS gift_recipients (
   age_range VARCHAR(50),
   budget VARCHAR(50),
   category VARCHAR(100),
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  user_id INT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
-
-ALTER TABLE gift_recipients
-  ADD COLUMN user_id INT NOT NULL,
-  ADD CONSTRAINT fk_recipient_user
-    FOREIGN KEY (user_id) REFERENCES users(id)
-    ON DELETE CASCADE;
-
+  แก้ให้ดีขึ้น
+*/ 
 
 -- bookmarks table to link users and their bookmarked products
-CREATE TABLE `bookmarks` (
+CREATE TABLE IF NOT EXISTS bookmarks(
   id int(11) NOT NULL,
   user_id int(11) NOT NULL,
   product_id int(11) NOT NULL,
@@ -128,9 +100,88 @@ CREATE TABLE `bookmarks` (
   created_at timestamp NOT NULL DEFAULT current_timestamp()
 )
 
-CREATE TABLE `bookmark_folders` (
+CREATE TABLE IF NOT EXISTS bookmark_folders (
   id int(11) NOT NULL,
   user_id int(11) NOT NULL,
   name varchar(190) NOT NULL DEFAULT 'รายการของฉัน',
   created_at timestamp NOT NULL DEFAULT current_timestamp()
 )
+
+
+-- จัดประเภทใหม่ แบบ คงที่
+
+CREATE TABLE budget_options (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL UNIQUE,
+  min_price DECIMAL(10,2) DEFAULT 0,
+  max_price DECIMAL(10,2) DEFAULT 999999.99,
+  display_order INT DEFAULT 0
+);
+
+-- ตัวอย่างข้อมูล
+INSERT INTO budget_options (name, min_price, max_price, display_order) VALUES
+('Under 500', 0, 499.99, 1),
+('500 - 1,000', 500, 1000, 2),
+('1,000 - 3,000', 1000, 3000, 3),
+('Over 3,000', 3000, 999999.99, 4);
+
+CREATE TABLE genders (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(50) NOT NULL UNIQUE,
+  display_name VARCHAR(50) NOT NULL,
+  icon VARCHAR(50) DEFAULT NULL
+);
+
+INSERT INTO genders (name, display_name) VALUES
+('any', 'Any'),
+('male', 'Male'),
+('female', 'Female'),
+('non_binary', 'Non-binary');
+
+CREATE TABLE age_ranges (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(50) NOT NULL UNIQUE,
+  min_age INT,
+  max_age INT,
+  display_name VARCHAR(100)
+);
+
+INSERT INTO age_ranges (name, min_age, max_age, display_name) VALUES
+('any', 0, 150, 'Any'),
+('child', 0, 12, 'Child (0-12)'),
+('teen', 13, 19, 'Teen (13-19)'),
+('adult', 20, 60, 'Adult (20-60)'),
+('senior', 61, 150, 'Senior (61+)');
+
+CREATE TABLE relationships (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL UNIQUE,
+  display_name VARCHAR(100) NOT NULL,
+  icon VARCHAR(50) DEFAULT NULL
+);
+
+INSERT INTO relationships (name, display_name) VALUES
+('family', 'ครบครัว'),
+('friend', 'เพื่อน'),
+('colleague', 'เพื่อนร่วมงาน'),
+('partner', 'คู่รัก'),
+('boss', 'เจ้านาย');
+
+
+CREATE TABLE gift_recipients (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(190),
+  relationship_id INT, -- แทน relationship VARCHAR
+  gender_id INT,       -- แทน gender VARCHAR
+  age_range_id INT,    -- แทน age_range VARCHAR
+  budget_id INT,       -- แทน budget VARCHAR
+  category VARCHAR(100), -- ถ้ายังใช้ string ได้ (หรือจะเชื่อมกับ categories ที่มีแล้วก็ได้)
+  user_id INT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (relationship_id) REFERENCES relationships(id) ON DELETE SET NULL,
+  FOREIGN KEY (gender_id) REFERENCES genders(id) ON DELETE SET NULL,
+  FOREIGN KEY (age_range_id) REFERENCES age_ranges(id) ON DELETE SET NULL,
+  FOREIGN KEY (budget_id) REFERENCES budget_options(id) ON DELETE SET NULL
+);
