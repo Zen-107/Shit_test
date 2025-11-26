@@ -469,8 +469,8 @@ main {
 
 .sub-dropdown {
   position: absolute;
-  left: 100%;
-  top: 0;
+  right: 100%;
+  top: 1;
   background: white;
   min-width: 180px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
