@@ -1,0 +1,106 @@
+/* ========== SLIDESHOW ========== */
+.slideshow {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: var(--radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.slides-container {
+  display: flex;
+  transition: transform 0.5s ease;
+  height: 400px;
+}
+
+.slide {
+  min-width: 100%;
+  position: relative;
+}
+
+.slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.slide-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.3);
+  color: white;
+  border: none;
+  padding: 1rem 1.5rem;
+  font-size: 2rem;
+  cursor: pointer;
+  z-index: 10;
+  transition: 0.2s;
+}
+
+.slide-btn:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.prev {
+  left: 10px;
+}
+
+.next {
+  right: 10px;
+}
+
+.dots {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.dot.active {
+  background: white;
+}
+
+/* ========== HERO ========== */
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 4rem 1rem 3rem;
+}
+
+.hero h1 {
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  color: var(--primary);
+  margin: 0 0 1rem;
+  line-height: 1.2;
+  font-weight: var(--font-weight-bold);
+}
+
+.hero p {
+  font-size: clamp(1rem, 2.5vw, 1.3rem);
+  color: #555;
+  margin: 0 0 1.8rem;
+  max-width: 650px;
+  line-height: 1.6;
+}
+
+/* ========== POPULAR PICKS ========== */
+#popular {
+  grid-template-columns: repeat(4, 1fr);
+}

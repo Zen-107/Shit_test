@@ -1,0 +1,26 @@
+/* ========== PRODUCT PAGE ONLY ========== */
+.product-description {
+  line-height: 1.6;
+  margin: 1rem 0;
+  color: #333;
+}
+
+.product-description p {
+  margin: 0 0 1em 0;
+}
+
+.bookmark-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #eef2ff;
+  color: var(--primary);
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.bookmark-btn.bookmarked {
+  background: #ffebd5;
+  color: #e65c00;
+}
