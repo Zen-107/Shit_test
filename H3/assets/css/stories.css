@@ -1,0 +1,100 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* หยุด scroll หลักของหน้า */
+  font-family: system-ui, sans-serif;
+}
+
+/* กล่องใหญ่ 3 คอลัมน์ */
+.stories-layout {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  display: flex;
+  gap: 1.5rem;
+
+  height: 100vh;          /* สูงเท่าหน้าจอ */
+  box-sizing: border-box;
+  overflow: hidden;       /* ไม่ให้ layout ใหญ่สกอร์เอง */
+}
+
+/* คอลัมน์ซ้าย */
+.stories-sidebar-left {
+  flex: 0 0 220px;        /* fix กว้างประมาณ 220px */
+  overflow-y: auto;       /* สกอร์ของตัวเอง */
+}
+
+/* คอลัมน์กลาง (กรอบ) */
+.stories-main {
+  flex: 1 1 auto;
+  position: relative;     /* ให้ปุ่ม + ยึดกับกรอบนี้ */
+  overflow: hidden;       /* ไม่ให้ตัวกรอบสกอร์เอง */
+  display: flex;
+  flex-direction: column;
+}
+
+/* ตัวที่เลื่อนจริงในคอลัมน์กลาง */
+.stories-main-inner {
+  flex: 1 1 auto;
+  overflow-y: auto;       /* อันนี้แหละ scroll กลาง */
+}
+
+/* คอลัมน์ขวา */
+.stories-sidebar-right {
+  flex: 0 0 260px;
+  overflow-y: auto;       /* สกอร์ของตัวเอง */
+}
+
+/* การ์ด / ส่วนต่าง ๆ ข้างในค่อยแต่งเพิ่ม */
+.story-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1rem;
+}
+
+/* ปุ่ม + ลอยในคอลัมน์กลาง (ลอยทับ content และไม่เลื่อนไปกับ main-inner) */
+.floating-add-btn {
+  position: absolute;   /* อ้างอิงจาก .stories-main */
+  bottom: 1.5rem;
+  right: 1.5rem;
+
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* เวลาหน้าจอเล็ก → ให้คอลัมน์เรียงลงล่างแทน และกลับไป scroll ทั้งหน้า */
+@media (max-width: 900px) {
+  html, body {
+    overflow: auto;       /* ให้กลับมาเลื่อนทั้งหน้า */
+  }
+
+  .stories-layout {
+    flex-direction: column;
+    height: auto;
+    overflow: visible;
+  }
+  .stories-sidebar-left,
+  .stories-main,
+  .stories-sidebar-right {
+    flex: 1 1 auto;
+    overflow: visible;    /* ไม่ต้องแยกสกอร์แล้ว */
+  }
+  
+
+  .floating-add-btn {
+    position: fixed;      /* มือถือให้ลอยติดจอแทน */
+    bottom: 1.5rem;
+    right: 1.5rem;
+  }
+  
+}
