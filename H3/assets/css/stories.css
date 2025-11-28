@@ -1,10 +1,10 @@
-html, body {
-  height: 100%;
-  width: 100%;
+html,body {
+  height: 100vh;
+  width: 100vw;
   margin: 0;
   padding: 0;
   background-color: var(--accent); /*bg-light*/
-  
+  overflow: hidden;       /* ไม่ให้เลื่อนทั้งหน้า */
 }
 
 /* ปุ่ม toggle nav ซ้าย */
@@ -60,20 +60,23 @@ html, body {
 
 /* กล่องใหญ่ 3 คอลัมน์ */
 .stories-layout {
-  margin-top: 0;
-  margin-bottom:0;
   display: flex;
   gap: 0rem;
-  height: 99vh;          /* สูงเท่าหน้าจอ */
+  height: calc(100vh - 56px);  /* ลบ header ออก */
   box-sizing: border-box;
   overflow: hidden;       /* ไม่ให้ layout ใหญ่สกอร์เอง */
 }
 
 /* คอลัมน์ซ้าย */
 .stories-sidebar-left {
-  flex: 0 0 220px;        /* fix กว้างประมาณ 220px */
+ width: 260px;
   overflow-y: auto;       /* สกอร์ของตัวเอง */
 }
+.stories-nav{
+  padding-left: 1rem;
+  min-height: 70%;
+}
+
 
 /* คอลัมน์กลาง (กรอบ) */
 .stories-main {
@@ -121,6 +124,7 @@ html, body {
   .stories-sidebar-right {
     flex: 1 1 auto;
     overflow: visible;    /* ไม่ต้องแยกสกอร์แล้ว */
+    
   }
   
 
