@@ -1,5 +1,4 @@
 <?php
-// session_start(); ← ลบบรรทัดนี้ออก
 include 'api/config.php';
 
 if (!isset($_SESSION["user_id"])) {
@@ -57,19 +56,50 @@ try {
 <head>
     <meta charset="UTF-8">
     <title><?= htmlspecialchars($folder['name']) ?> - Gift Finder</title>
-    <link rel="stylesheet" href="assets/css/index&dashboard.css">
+    <link rel="stylesheet" href="assets/css/global.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
+
 <body>
-    <header class="navbar">
-        <div class="container nav-content">
-            <a class="logo" href="index.html">🎁 Gift Finder</a>
-            <nav class="nav-links">
-                <a href="form.html">Find Gifts</a>
-                <a href="blog.html">Blog</a>
-                <a href="results.html">Product</a>
-                <a href="index.html">Home</a>
-            </nav>
+  <header class="navbar">
+    <div class="container nav-content">
+      <a class="logo" href="index.html">🎁 Gift Finder</a>
+      <nav class="nav-links">
+        <a href="form.html">Find Gifts</a>
+        <a href="blog.html">Blog</a>
+        <a href="results.html">Product</a>
+
+        <!-- ปุ่ม Login (ใช้ตอนยังไม่ล็อกอิน) -->
+        <a id="login-entry" href="login.html">Login</a>
+
+<!----------------------------------บัว--------------------------------------------------------->
+        <!-- เมนูโปรไฟล์ (ใช้ตอนล็อกอินแล้ว) -->
+        <div class="profile-menu" id="profileMenu" style="display: none;">
+          <button class="profile-toggle" id="profileToggle">
+            Profile ▾
+          </button>
+        <div class="profile-dropdown" id="profileDropdown">
+          <a href="#" id="fav-link">Favorite</a>
+          <a href="#" id="friend-link">Friend</a>
+          <button id="logoutBtn" type="button">Logout</button>
+
+          <!-- Dropdown ที่สอง (ซ่อนไว้ก่อน) -->
+          <div class="sub-dropdown" id="favDropdown" style="display: none;">
+            <h4>Favorites</h4>
+            <a href="#">Gift 1</a>
+            <a href="#">Gift 2</a>
+            <a href="#">Gift 3</a>
+          </div>
+          <div class="sub-dropdown" id="friendDropdown" style="display: none;">
+            <h4>Friends</h4>
+            <a href="#">Friend A</a>
+            <a href="#">Friend B</a>
+            <a href="#">Friend C</a>
+          </div>
+        </div>
+        </div>
+          
+          </nav>
         </div>
     </header>
 
@@ -120,3 +150,31 @@ try {
     </footer>
 </body>
 </html>
+
+
+<!--------------------------------------------เพิ่มโค้ดบัว------------------------------------------------->
+<script src="assets/js/app.js"></script>
+<script>
+  // โค้ดตรวจสอบ login เหมือนใน index.html
+  (async () => {
+    const loginLink = document.getElementById("login-entry");
+    const profileMenu = document.getElementById("profileMenu");
+    if (!loginLink || !profileMenu) return;
+
+    try {
+      const res = await fetch("api/check_session.php");
+      const data = await res.json();
+      if (data.loggedIn) {
+        loginLink.style.display = "none";
+        profileMenu.style.display = "inline-block";
+      } else {
+        loginLink.style.display = "inline-block";
+        profileMenu.style.display = "none";
+      }
+    } catch (err) {
+      // ถ้า API ล้มเหลว ให้แสดงเป็นไม่ล็อกอิน
+      loginLink.style.display = "inline-block";
+      profileMenu.style.display = "none";
+    }
+  })();
+</script>

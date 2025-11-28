@@ -4,9 +4,31 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Gift Finder – Results</title>
-  <link rel="stylesheet" href="assets/css/styles.css"/>
+  <link rel="stylesheet" href="assets/css/global.css"/>
 </head>
 <body>
+  <header class="navbar">
+    <div class="container nav-content">
+      <a class="logo" href="index.html">🎁 Gift Finder</a>
+      <nav class="nav-links">
+        <a href="form.html">Find Gifts</a>
+        <a href="blog.html">Blog</a>
+        <a href="results.html">Product</a>
+        <a id="login-entry" href="login.html">Login</a>
+        <div class="profile-menu" id="profileMenu" style="display: none;">
+          <button class="profile-toggle" id="profileToggle">Profile ▾</button>
+          <div class="profile-dropdown" id="profileDropdown">
+            <a href="#" id="fav-link">Favorite</a>
+            <a href="#" id="friend-link">Friend</a>
+            <button id="logoutBtn" type="button">Logout</button>
+            <div class="sub-dropdown" id="favDropdown" style="display: none;"></div>
+            <div class="sub-dropdown" id="friendDropdown" style="display: none;"></div>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </header>
+
   <main class="container section">
     <h1>All Product</h1>
     <div id="criteria" class="muted"></div>
@@ -14,9 +36,41 @@
     <div id="empty" class="empty" style="display:none">No results. Try broadening your filters.</div>
   </main>
 
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-copy">
+        © 2025 Gift Finder
+      </div>
+    </div>
+  </footer>
+
   <script src="assets/js/app.js"></script>
-  <script src="assets/js/results.js"></script>
+  <script src="assets/js/show_product.js"></script>
+  <script src="assets/js/header.js"></script>
+
+  <script>
+
+    (async () => {
+      const loginLink = document.getElementById("login-entry");
+      const profileMenu = document.getElementById("profileMenu");
+      if (!loginLink || !profileMenu) return;
+
+      try {
+        const res = await fetch("api/check_session.php");
+        const data = await res.json();
+        if (data.loggedIn) {
+          loginLink.style.display = "none";
+          profileMenu.style.display = "inline-block";
+        } else {
+          loginLink.style.display = "inline-block";
+          profileMenu.style.display = "none";
+        }
+      } catch (err) {
+        // ถ้า API ล้มเหลว ให้แสดง login
+        loginLink.style.display = "inline-block";
+        profileMenu.style.display = "none";
+      }
+    })();
+  </script>
 </body>
 </html>
-
-
