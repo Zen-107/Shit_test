@@ -311,14 +311,14 @@ main {
   font-size: 0.8rem;
   font-weight: var(--font-weight-medium);
 
-  /////////// บัวเพิ่ม ///////////
+  /* บัวเพิ่ม */
   max-width: 100px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   display: inline-block;
   text-align: left;
-  /////////////////////////////
+ 
 }
 
 /* ========== FORM BASICS ========== */
