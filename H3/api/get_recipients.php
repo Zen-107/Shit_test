@@ -5,7 +5,16 @@ header('Content-Type: application/json; charset=utf-8');
 
 require_once __DIR__ . '/config.php';
 
-
+// --- 1) เตรียม PDO จาก config.php ---
+if (!isset($pdo)) {
+    if (function_exists('getPDO')) {
+        $pdo = getPDO();
+    } else {
+        http_response_code(500);
+        echo json_encode([]);
+        exit;
+    }
+}
 
 // --- 2) ถ้าไม่ได้ล็อกอิน ให้ส่ง [] กลับไป (ไม่ใช่ null) ---
 if (empty($_SESSION['user_id'])) {
@@ -17,17 +26,6 @@ $userId = (int) $_SESSION['user_id'];
 
 try {
     // --- 3) ดึงรายชื่อบุคคลสำคัญของ user คนนี้ ---
-
-        $sql = "
-        SELECT
-            r.id,
-            r.name
-        FROM gift_recipients AS r
-        WHERE r.user_id = :uid
-        ORDER BY r.id DESC
-    ";
-
-    /* โบกีมาแก้
     $sql = "
         SELECT
             r.id,
@@ -42,8 +40,6 @@ try {
         WHERE r.user_id = :uid
         ORDER BY r.id DESC
     ";
-*/
-
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute([':uid' => $userId]);

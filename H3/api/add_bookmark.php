@@ -52,10 +52,10 @@ if ($folder_id > 0) {
 
 // เพิ่มบุ๊กมาร์ก
 $stmt = $pdo->prepare("
-    INSERT INTO bookmarks (user_id, product_id, folder_id)
-    VALUES (?, ?,  ?)
+    INSERT INTO bookmarks (user_id, product_id, folder_id, custom_name, note)
+    VALUES (?, ?, ?, ?, ?)
 ");
-$stmt->execute([$user_id, $product_id, $folder_id ?: null]);
+$stmt->execute([$user_id, $product_id, $folder_id ?: null, $custom_name, $note]);
 
 echo json_encode(["success" => true, "message" => "บุ๊กมาร์กสำเร็จ"]);
 
