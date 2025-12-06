@@ -18,7 +18,7 @@ Files
 - `results.html` – Recommended gifts
 - `product.html` – Product detail
 - `cart.html` – Cart/Checkout
-- `stories.html`, `blog-post.html` – Stories list and article
+- `stories.html`, `story-view.html` – Stories list and article
 - `about.html`, `contact.html` – About/Contact
 - `assets/css/styles.css` – Styles
 - `assets/js/data.js` – Mock catalog data
