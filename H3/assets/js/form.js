@@ -26,41 +26,29 @@ let currentFriendId = null;
 // ---------------------------------------------------------
 function renderInterests() {
   const target = document.getElementById("interests");
-  const unique = [
 
-    "Sports & Outdoors",
-
-    "Toys & Kids",
-
-    "Beauty & Personal Care",
-
-    "Pets",
-
-    "Food, Drinks & Cooking",
-
-    "Electronics",
-
-    "Gaming & Accessories",
-
-    "Fashion & Jewelry",
-
-    "Stationery & Books",
-
-    "Home & Lifestyle",
-
-    "Health & Supplements",
-
-    "Art & Music",
-
-    "DIY & Crafts",
+  const categories = [
+    { value: "travel & Outdoors", label: "Sports & Outdoors" }, // 👈 ค่าตรงกับ DB
+    { value: "Toys & Kids", label: "Toys & Kids" },
+    { value: "Beauty & Personal Care", label: "Beauty & Personal Care" },
+    { value: "Pets", label: "Pets" },
+    { value: "Food, Drinks & Cooking", label: "Food, Drinks & Cooking" },
+    { value: "Electronics", label: "Electronics" },
+    { value: "Gaming & Accessories", label: "Gaming & Accessories" },
+    { value: "Fashion & Jewelry", label: "Fashion & Jewelry" },
+    { value: "Stationery & Books", label: "Stationery & Books" },
+    { value: "Home & Lifestyle", label: "Home & Lifestyle" },
+    { value: "Health & Supplements", label: "Health & Supplements" },
+    { value: "Art & Music", label: "Art & Music" },
+    { value: "DIY & Crafts", label: "DIY & Crafts" },
   ];
 
-  target.innerHTML = unique
+  target.innerHTML = categories
     .map(
-      (v) => `
+      (cat) => `
       <label class="pill">
-        <input type="checkbox" value="${v}" />
-        ${v}
+        <input type="checkbox" value="${cat.value}" />
+        ${cat.label}
       </label>
     `
     )
@@ -71,6 +59,7 @@ function renderInterests() {
     if (pill) pill.classList.toggle("active");
   });
 }
+
 
 // ---------------------------------------------------------
 // เวลา user คลิกชื่อเพื่อน → เติมข้อมูลลงฟอร์ม
@@ -144,15 +133,16 @@ async function saveProfileToServer(criteria, extraFields = {}) {
   formData.append("age", criteria.age || "");
   formData.append("relationship", criteria.relationship || "");
 
-  // interest[]
-  if (Array.isArray(criteria.interests)) {
-    criteria.interests.forEach((i) => formData.append("interests[]", i));
+  // categories[]
+  if (Array.isArray(criteria.categories)) {
+    criteria.categories.forEach((c) => formData.append("categories[]", c));
   }
 
-  // personality[] (ถ้าใช้)
-  if (Array.isArray(criteria.personality)) {
-    criteria.personality.forEach((p) => formData.append("personality[]", p));
-  }
+
+  // personality[] (ถ้าใช้ในอนาคต)
+  // if (Array.isArray(criteria.personality)) {
+  //   criteria.personality.forEach((p) => formData.append("personality[]", p));
+  // }
 
   // extra fields (เช่น budget)
   Object.entries(extraFields).forEach(([key, value]) => {
@@ -342,7 +332,8 @@ document.addEventListener("DOMContentLoaded", () => {
       gender: data.get("gender") || "",
       age: data.get("age") || "",
       relationship: data.get("relationship") || "",
-      interests: selectedInterests,
+      categories: selectedInterests,
+
     };
     const saveProfile = data.get("save_profile") === "on";
 
