@@ -9,48 +9,47 @@
   <link rel="stylesheet" href="assets/css/stories.css" /></head>
 
 <body>
-  <header class="navbar">
+ <header class="navbar">
     <div class="container nav-content">
       <a class="logo" href="index.html">🎁 Gift Finder</a>
       <nav class="nav-links">
         <a href="form.html">Find Gifts</a>
         <a href="stories.html">Stories</a>
-        <a href="results.html">Product</a>
+        <a href="show_all_product.html">Product</a>
 
         <!-- ปุ่ม Login (ใช้ตอนยังไม่ล็อกอิน) -->
         <a id="login-entry" href="login.html">Login</a>
 
-<!----------------------------------บัว--------------------------------------------------------->
+        <!----------------------------------บัว--------------------------------------------------------->
         <!-- เมนูโปรไฟล์ (ใช้ตอนล็อกอินแล้ว) -->
         <div class="profile-menu" id="profileMenu" style="display: none;">
           <button class="profile-toggle" id="profileToggle">
             Profile ▾
           </button>
-        <div class="profile-dropdown" id="profileDropdown">
-          <a href="#" id="fav-link">Favorite</a>
-          <a href="#" id="friend-link">Friend</a>
-          <button id="logoutBtn" type="button">Logout</button>
+          <div class="profile-dropdown" id="profileDropdown">
+            <a href="#" id="fav-link">Favorite</a>
+            <a href="#" id="friend-link">Friend</a>
+            <button id="logoutBtn" type="button">Logout</button>
 
-          <!-- Dropdown ที่สอง (ซ่อนไว้ก่อน) -->
-          <div class="sub-dropdown" id="favDropdown" style="display: none;">
-            <h4>Favorites</h4>
-            <a href="#">Gift 1</a>
-            <a href="#">Gift 2</a>
-            <a href="#">Gift 3</a>
+            <!-- Dropdown ที่สอง (ซ่อนไว้ก่อน) -->
+            <div class="sub-dropdown" id="favDropdown" style="display: none;">
+              <h4>Favorites</h4>
+              <a href="#">Gift 1</a>
+              <a href="#">Gift 2</a>
+              <a href="#">Gift 3</a>
+            </div>
+            <div class="sub-dropdown" id="friendDropdown" style="display: none;">
+              <h4>Friends</h4>
+              <div id="friendList">
+                <!-- JS จะเอาชื่อเพื่อนจริง ๆ มาเติมตรงนี้ -->
+              </div>
+            </div>
           </div>
-          <div class="sub-dropdown" id="friendDropdown" style="display: none;">
-            <h4>Friends</h4>
-            <a href="#">Friend A</a>
-            <a href="#">Friend B</a>
-            <a href="#">Friend C</a>
-          </div>
-        </div>
-        </div>
-          
+
       </nav>
     </div>
 
-<!----------------------------------บัว--------------------------------------------------------->
+    <!----------------------------------บัว--------------------------------------------------------->
 
   </header>
 
