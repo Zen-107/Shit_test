@@ -61,6 +61,7 @@
             const uploadForm = document.getElementById('uploadForm');
 
             // --- Logic สำหรับ Preview รูปภาพ (เหมือนเดิม) ---
+            // ผู้ใช้สามารถเลือกรูปใหม่ได้โดยการคลิกที่ปุ่ม หรือคลิกที่รูป Preview
             const handleFileChange = function(e) {
                 const file = e.target.files[0];
                 if (file) {
@@ -72,6 +73,7 @@
                     };
                     reader.readAsDataURL(file);
                 } else {
+                    // หากยกเลิกการเลือกไฟล์
                     imagePreview.src = '#';
                     imagePreview.style.display = 'none';
                     uploadLabel.style.display = 'flex';
@@ -80,7 +82,7 @@
 
             imageUpload.addEventListener('change', handleFileChange);
             imagePreview.addEventListener('click', function() {
-                imageUpload.click();
+                imageUpload.click(); // คลิกที่รูป Preview เพื่อเปิด dialog เลือกไฟล์อีกครั้ง
             });
 
 
@@ -89,9 +91,10 @@
                 e.preventDefault(); 
 
                 const formData = new FormData(uploadForm); 
+                const coverFile = formData.get('cover_file');
 
-                // ตรวจสอบไฟล์
-                if (formData.get('cover_file').size === 0) {
+                // ตรวจสอบไฟล์อีกครั้งก่อนส่ง
+                if (!coverFile || coverFile.size === 0) {
                     alert('กรุณาเลือกรูปปกของเรื่องราว');
                     return; 
                 }
@@ -101,14 +104,25 @@
                 submitButton.disabled = true;
 
                 // ส่งข้อมูลทั้งหมดไปยัง PHP API
+                // **Path นี้ควรชี้ไปที่ upload_story.php ที่แก้ไขแล้ว**
                 fetch('api/upload_story.php', {
                     method: 'POST',
                     body: formData
                 })
-                .then(response => response.json())
+                .then(response => {
+                    // ตรวจสอบว่า Response เป็น JSON หรือไม่
+                    const contentType = response.headers.get("content-type");
+                    if (contentType && contentType.indexOf("application/json") !== -1) {
+                        return response.json();
+                    } else {
+                        // ถ้าไม่ใช่ JSON แสดงว่ามี Error ที่ไม่ได้อยู่ในรูปแบบ JSON (เช่น PHP Error)
+                        console.error('Server returned non-JSON response.');
+                        throw new Error('Server returned unexpected format.');
+                    }
+                })
                 .then(data => {
                     if (data.success) {
-                        alert(`บันทึกเรื่องราวสำเร็จ! Story ID: ${data.story_id}, Path รูปภาพ: ${data.cover_image_path}`);
+                        alert(`🎉 บันทึกเรื่องราวสำเร็จ!\nStory ID: ${data.story_id}\nรูปภาพถูกเก็บใน: ${data.cover_image_path}`);
                         uploadForm.reset(); 
                         
                         // คืนค่าสถานะเดิมของ Preview
@@ -117,12 +131,12 @@
                         uploadLabel.style.display = 'flex';
                     } else {
                         console.error('Upload failed:', data.message);
-                        alert('การบันทึกล้มเหลว: ' + data.message);
+                        alert('🚨 การบันทึกล้มเหลว: ' + data.message);
                     }
                 })
                 .catch(error => {
                     console.error('Error during fetch:', error);
-                    alert('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์');
+                    alert('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์ หรือมีข้อผิดพลาดที่ไม่คาดคิด');
                 })
                 .finally(() => {
                     submitButton.textContent = 'บันทึกเรื่องราว';
