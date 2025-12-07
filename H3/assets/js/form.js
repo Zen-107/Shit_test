@@ -1,4 +1,4 @@
-alert("FORM.JS FILE A LOADED");
+
 
 
 // helper query
@@ -168,7 +168,10 @@ async function saveProfileToServer(criteria, extraFields = {}) {
     try {
       json = JSON.parse(raw);
     } catch (e) {
-      alert("❌ เซิร์ฟเวอร์ตอบกลับไม่ใช่ JSON\n\n" + raw);
+      alert("❌ เซิร์ฟเวอร์ตอบกลับไม่ใช่ JSON\n" +
+        "❌ Server response is not valid JSON.\n\n" +
+        raw
+      );
       return false;
     }
 
@@ -177,19 +180,30 @@ async function saveProfileToServer(criteria, extraFields = {}) {
     if (!json) return false;
 
     if (json.status === "duplicate") {
-      alert("⚠️ มีเพื่อนชื่อนี้อยู่แล้ว");
+      alert(
+        "⚠️ มีเพื่อนชื่อนี้อยู่แล้ว\n" +
+        "⚠️ A friend with this name already exists."
+      );
       return false;
     }
 
     if (json.status !== "ok") {
-      alert("❌ บันทึกบุคคลสำคัญไม่สำเร็จ: " + (json.message || "unknown error"));
+      alert(
+        "❌ บันทึกเพื่อนไม่สำเร็จ: " + (json.message || "unknown error") + "\n" +
+        "❌ Failed to save friends."
+      );
+
       return false;
     }
 
     return true;
   } catch (err) {
     console.error("Error saving recipient to server", err);
-    alert("❌ มีปัญหาในการเชื่อมต่อเซิร์ฟเวอร์");
+    alert(
+      "❌ มีปัญหาในการเชื่อมต่อเซิร์ฟเวอร์\n" +
+      "❌ There was a problem connecting to the server."
+    );
+
     return false;
   }
 }
@@ -208,7 +222,12 @@ async function loadRecipientsFromServer() {
     try {
       list = JSON.parse(raw);
     } catch (e) {
-      alert("❌ get_recipients.php ส่งกลับมาไม่ใช่ JSON\n\n" + raw);
+      alert(
+        "❌ get_recipients.php ส่งกลับมาไม่ใช่ JSON\n" +
+        "❌ get_recipients.php did not return valid JSON.\n\n" +
+        raw
+      );
+
       return;
     }
 
@@ -276,10 +295,15 @@ document.addEventListener("DOMContentLoaded", () => {
   if (deleteBtn) {
     deleteBtn.addEventListener("click", async () => {
       if (!currentFriendId) {
-        alert("ยังไม่ได้เลือกบุคคลสำคัญ");
+        alert(
+          "ยังไม่ได้เลือกเพื่อน\n" +
+          "No friend selected."
+        );
         return;
       }
-      if (!confirm("ต้องการลบบุคคลสำคัญคนนี้หรือไม่?")) return;
+      if (!confirm("ต้องการลบเพื่อนคนนี้หรือไม่?\n" +
+        "Do you want to delete this friend?"
+      )) return;
 
       try {
         const fd = new FormData();
@@ -300,18 +324,27 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         if (json.status === "ok") {
-          alert("ลบบุคคลสำคัญเรียบร้อยแล้ว ✅");
+          alert(
+            "ลบเพื่อนเรียบร้อยแล้ว ✅\n" +
+            "Friend deleted successfully. ✅"
+          );
 
           // ✅ กลับไปหน้า index ทันที
           window.location.href = "index.html";
         }
         else {
-          alert("ลบไม่สำเร็จ: " + (json.message || "ไม่ทราบสาเหตุ"));
+          alert(
+            "ลบไม่สำเร็จ\n" +
+            "Delete failed."
+          );
         }
 
       } catch (err) {
         console.error("delete_recipient error", err);
-        alert("ลบไม่สำเร็จ (ปัญหาการเชื่อมต่อ)");
+        alert(
+          "ลบไม่สำเร็จ (ปัญหาการเชื่อมต่อ)\n" +
+          "Delete failed (connection issue)."
+        );
       }
     });
   }
@@ -340,6 +373,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     };
     const saveProfile = data.get("save_profile") === "on";
+    // ✅ บังคับให้กรอกชื่อก่อนบันทึก
+    if (saveProfile && !criteria.name.trim()) {
+      alert("⚠️ กรุณากรอกชื่อบุคคลสำคัญก่อนบันทึก ถ้าหากไม่ต้องการบันทึกให้กดติ๊กออกแล้วด see recommendation\n" +
+        "⚠️ Please enter your friend's name before saving."
+      );
+
+      document.querySelector('input[name="name"]').focus();
+      return; // ❌ ไม่ให้ submit ต่อ
+    }
+
 
     if (saveProfile) {
       // ไม่ต้องเก็บ localStorage แล้วก็ได้ ถ้าใช้ DB อย่างเดียว
@@ -358,7 +401,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // ถ้าบันทึกสำเร็จ reset currentFriendId
       currentFriendId = null;
-      alert("✅ บันทึกบุคคลสำคัญเรียบร้อยแล้ว");
+      alert(
+        "✅ บันทึกเพื่อนเรียบร้อยแล้ว\n" +
+        "✅ Friend saved successfully."
+      );
     }
 
     // ส่ง criteria ไปหน้า results ตามปกติ
