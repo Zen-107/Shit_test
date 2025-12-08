@@ -99,6 +99,11 @@
   max-width: 650px;
   line-height: 1.6;
 }
+/* ========== POPULAR PICKS ========== */
+#popular {
+  grid-template-columns: repeat(4, 1fr);
+}
+
 
 /* ========== POPULAR STORIES (เหมือน Staff Picks) ========== */
 .popular-stories { /* 👈 ใช้ class ที่เพิ่มใน index.html */
@@ -108,7 +113,7 @@
 
 .staff-picks-container-wrapper { /* เพิ่ม wrapper เพื่อจัดตำแหน่งปุ่มเลื่อน */
     position: relative;
-    padding: 0 40px; /* เว้นพื้นที่ด้านข้างสำหรับปุ่มเลื่อนบน Desktop */
+    padding: 0;
 }
 
 .staff-picks-container { 
@@ -129,7 +134,7 @@
   overflow-x: auto;
   padding: 8px 0 12px;
   scroll-snap-type: x mandatory;
-  
+  justify-content: center !important;
   /* ซ่อน Scrollbar */
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -162,13 +167,7 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   background-color: #ddd; /* ใส่สีพื้นหลังเผื่อรูปไม่โหลด */
 }
-/* 🟢 ป้องกัน CSS เก่ารบกวน (Clear Fix) */
-#popular-stories,
-.grid.cards {
-  display: block !important;
-  grid-template-columns: none !important;
-  gap: 0 !important;
-}
+
 /* การ์ดแต่ละใบ */
 .staff-pick-card { 
   display: block;
@@ -248,13 +247,7 @@
   right: 0;
 }
 
-/* ซ่อนการ์ด popular-stories เก่า */
-#popular-stories .grid.cards {
-    /* ถ้ามีการใช้ ID #popular-stories หรือ class .grid.cards ที่ไปมีผลต่อ container ใหม่ */
-    display: block !important; /* ปรับให้เป็น block ธรรมดา */
-    grid-template-columns: none !important; /* ยกเลิก Grid */
-    gap: 0 !important;
-}
+
 /* ถ้าคุณใช้โครงสร้าง HTML ใหม่แล้ว คุณอาจไม่ต้องการ CSS เก่าสำหรับ card ในส่วนนี้ */
 #popular-stories .card {
     display: none; /* ซ่อนการ์ดเก่าถ้ามันยังแสดงอยู่ */
