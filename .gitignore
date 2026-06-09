@@ -1,2 +1,22 @@
-googlelogin.php.env
+# Environment variables (ห้ามอัปโหลดขึ้น Git เด็ดขาด!)
+.env
+.env.local
+.env.production
 
+# IDE & Editor
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Dependencies (ให้ Composer ติดตั้งเองตอน Deploy)
+vendor/
+node_modules/
+
+# Logs & Cache
+*.log
+composer.lock
+cache/
+tmp/

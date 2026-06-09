@@ -1,0 +1,13 @@
+{
+    "name": "gift-finder/gift-finder",
+    "description": "Gift Finder Web Application",
+    "type": "project",
+    "require": {
+        "php": ">=8.0"
+    },
+    "config": {
+        "platform": {
+            "php": "8.0"
+        }
+    }
+}

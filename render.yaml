@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: gift-finder
+    env: php
+    buildCommand: ""
+    startCommand: "php -S 0.0.0.0:$PORT"
+    envVars:
+      - key: SUPABASE_URL
+        value: https://vsyshokvaefyhjwbuufo.supabase.co
+      - key: SUPABASE_KEY
+        value: sb_publishable_PTTHyU8eaSUBI8xMPBTjJg_Cpe11gye
